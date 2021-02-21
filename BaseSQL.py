@@ -18,7 +18,7 @@ class BaseSQL():
     def alta(self, datos):
         con=self.abrir()
         cursor=con.cursor()
-        sql="insert into PALERMO (vInterno, vTipo, vPatchera, vssDatos, vUsuario, vSanatorio) }values (?,?,?,?,?,?)"
+        sql="insert into PALERMO (vInterno, vTipo, vPatchera, vssDatos, vUsuario) values (?,?,?,?,?)"
         cursor.execute(sql, datos)
         con.commit()
         con.close

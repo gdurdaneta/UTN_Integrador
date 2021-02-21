@@ -62,8 +62,8 @@ class integrador_Internos:
 
     def agregar(self):
         datos=(self.internocarga.get(), self.tipocarga.get(), self.patcheracarga.get(), self.ssdatoscarga.get(),self.usuariocarga.get())
-
         mb.showinfo("Información", "Los datos fueron cargados")
+        self.baseDatos.alta(datos)
         self.internocarga.set("")
         self.tipocarga.set("")
         self.patcheracarga.set("")
@@ -116,6 +116,7 @@ class integrador_Internos:
         self.boton1.grid(column=1, row=6, padx=4, pady=4)
 
     def consultar(self):
+        
         datos=(self.interno.get(), )
         respuesta=self.baseDatos.consulta(datos)
         if len(respuesta)>0:
