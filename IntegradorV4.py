@@ -2,13 +2,14 @@ import tkinter as tk
 from tkinter import Button, Entry, IntVar, Label, StringVar, ttk, scrolledtext 
 from tkinter import LabelFrame, Tk, messagebox
 import sqlite3
+from tkinter.constants import CENTER, END
 
 
 def conectadb():
     try:
         con = sqlite3.connect("database.db")
+        con.text_factory=str
         cursor = con.cursor()
-        
     except sqlite3.OperationalError:
         pass
     finally:
@@ -17,7 +18,7 @@ def conectadb():
 def creaddb():
     try:
         cursor = conectadb()
-        cursor.execute("CREATE TABLE PALERMO(interno INTERGER(20), tipo VARCHAR(20), equu VARCHAR(20), ubicapatch VARCHAR(20), ssdatos VARCHAR(20), usuario VARCHAR(20))")
+        cursor.execute("CREATE TABLE PALERMO(interno INTEGER(20), tipo VARCHAR(20), equu VARCHAR(20), ubicapatch VARCHAR(20), ssdatos VARCHAR(20), usuario VARCHAR(20))")
     except sqlite3.OperationalError:
         pass    
 
@@ -33,7 +34,7 @@ def altadb():
 def consultadb():
     try:
         cursor = conectadb()
-        cursor.execute("SELECT tipo, equu, ubicapatch, ssdatos, usuario FROM PALERMO where interno=?")
+        cursor.execute("SELECT * FROM PALERMO where interno=?")
         cursor.fetchall()
         cursor.close()
     finally:
@@ -53,12 +54,7 @@ def modificadb():
     cursor.execute("UPDATE PALERMO SET tipo, equu, ubicapatch, ssdatos, usuario VALUES(?,?,?,?)")    
     cursor.commit()
     cursor.close()
-
-
-
-
-conectadb()
-   
+ 
     
 #Ventana Principal
 ventana = Tk()
@@ -76,18 +72,27 @@ equu = StringVar()
 usuario = StringVar()
 ssdatos = StringVar()
 
-"""datos.append(interno+","+
-            tipo+","+
-            patchera+","+
-            equu+","+
-            ssdatos+","+
-            usuario)"""
+def guardar():
+    vinterno = interno.get()
+    vtipo = tipo.get()
+    vequu = equu.get()
+    vpatchera = patchera.get()
+    vssdatos = ssdatos.get()
+    vusuario = usuario.get()
 
-interno = interno.get()
-tipo = tipo.get()
-equu = equu.get()
-patchera = patchera.get()
-ssdatos = ssdatos.get()
+    datos.append(str(vinterno)+
+                vtipo+
+                vequu+
+                vpatchera+
+                vssdatos+
+                vusuario)
+    messagebox.showinfo("Guardado"," Los datos han sido guardados")
+    interno.set('')
+    tipo.set('')
+    patchera.set('')
+    equu.set('')
+    ssdatos.set('')
+    usuario.set('')
 
 
 #Pannel de pestañas
@@ -95,12 +100,15 @@ pestaña = ttk.Notebook(ventana)
 p1 = ttk.Frame(pestaña)   
 p2 = ttk.Frame(pestaña)   
 p3 = ttk.Frame(pestaña)
+p4 = ttk.Frame(pestaña)
 pestaña.add(p1, text='Consulta')
 pestaña.add(p2, text='Modificar')
 pestaña.add(p3, text='Eliminar')
+pestaña.add(p4, text='Consutlar todo')
 pestaña.grid(column=1, row=1)
 
 #Penstaña Consulta
+
 def pestaña_consulta():
     sInterno = Label(p1, text="Interno")
     sInterno.grid(column=0, row=0, padx=0, pady=0)
@@ -127,12 +135,7 @@ def pestaña_consulta():
     varSdDatosEntry = Entry(p1, textvariable=ssdatos, state="readonly")
     varSdDatosEntry.grid(column=1 , row=4)
 
-    mostrarlabelframe = ttk.Labelframe(ventana,text="Consulta")
-    #mostrar = scrolledtext(mostrarlabelframe, width=30, height=10)
-
-
-
-    consulta = Button(p1, text="Consulta")
+    consulta = Button(p1, text="Consulta", command=consultadb())
     consulta.grid(column=1, row=7)
 
 def pestaña_abm():
@@ -161,13 +164,12 @@ def pestaña_abm():
     varSdDatosEntry = Entry(p2, textvariable=ssdatos)
     varSdDatosEntry.grid(column=1 , row=4)
 
-    agregar = Button(p2, text="Agregar")
+    agregar = Button(p2, text="Agregar", command=altadb())
     agregar.grid(column=0, row=7)
-
+    agregar.invoke()
     modificar = Button(p2, text="Modificar")
     modificar.grid(column=1, row=7)
-
-    
+    modificar.invoke()
 
 def eliminar_interno():
     sInterno = Label(p3, text="Interno")
@@ -178,7 +180,11 @@ def eliminar_interno():
     eliminar = Button(p3, text="Eliminar")
     eliminar.grid(column=0, row=0)
 
+def consultar_todos():
+    pass
 
+conectadb()
+consultar_todos()
 pestaña_abm()
 pestaña_consulta()
 eliminar_interno()
