@@ -23,10 +23,9 @@ def creaddb():
         pass    
 
 def altadb():
-    creaddb()
     cursor = conectadb()
     sql = "insert into PALERMO (interno, tipo, equu, ubicapatch, ssdatos, usuario) values (?,?,?,?,?,?)"
-    alta = cursor.execute(sql,datos)
+    alta = cursor.execute(sql,guardar())
     cursor.commit()
     cursor.close()
     return alta
@@ -80,11 +79,11 @@ def guardar():
     vssdatos = ssdatos.get()
     vusuario = usuario.get()
 
-    datos.append(str(vinterno)+
-                vtipo+
-                vequu+
-                vpatchera+
-                vssdatos+
+    datos.append(str(vinterno)+" "+
+                vtipo+" "+
+                vequu+" "+
+                vpatchera+" "+
+                vssdatos+" "+
                 vusuario)
     messagebox.showinfo("Guardado"," Los datos han sido guardados")
     interno.set('')
@@ -93,6 +92,7 @@ def guardar():
     equu.set('')
     ssdatos.set('')
     usuario.set('')
+    return datos
 
 
 #Pannel de pestañas
@@ -112,28 +112,33 @@ pestaña.grid(column=1, row=1)
 def pestaña_consulta():
     sInterno = Label(p1, text="Interno")
     sInterno.grid(column=0, row=0, padx=0, pady=0)
-    sInternoEntry = Entry(p1, textvariable=interno)
+    sInternoEntry = Entry(p1, textvariable=interno.get())
     sInternoEntry.grid(column=1 , row=0)
 
     sTipo = Label(p1, text="Tipo")
     sTipo.grid(column=0, row=1, padx=0, pady=0)
-    sTipoEntry = Entry(p1, textvariable=tipo, state="readonly")
+    sTipoEntry = Entry(p1, textvariable=tipo.get(), state="readonly")
     sTipoEntry.grid(column=1 , row=1)
 
     sEquu = Label(p1, text="Equu")
     sEquu.grid(column=0, row=2, padx=0, pady=0)
-    sEquuEntry = Entry(p1, textvariable=equu, state="readonly")
+    sEquuEntry = Entry(p1, textvariable=equu.get(), state="readonly")
     sEquuEntry.grid(column=1 , row=2)
 
     sPatchera = Label(p1, text="Patchera")
     sPatchera.grid(column=0, row=3, padx=0, pady=0)
-    sPatcheraEntry = Entry(p1, textvariable=patchera, state="readonly")
+    sPatcheraEntry = Entry(p1, textvariable=patchera.get(), state="readonly")
     sPatcheraEntry.grid(column=1 , row=3)
 
     varSdDatos = Label(p1, text="Sala de datos")
     varSdDatos.grid(column=0, row=4, padx=0, pady=0)
-    varSdDatosEntry = Entry(p1, textvariable=ssdatos, state="readonly")
+    varSdDatosEntry = Entry(p1, textvariable=ssdatos.get(), state="readonly")
     varSdDatosEntry.grid(column=1 , row=4)
+    
+    susuario = Label(p1, text="Usuario")
+    susuario.grid(column=0, row=5, padx=0, pady=0)
+    susuarioEntry = Entry(p1, textvariable=usuario.get(), state="readonly")
+    susuarioEntry.grid(column=1 , row=5)
 
     consulta = Button(p1, text="Consulta", command=consultadb())
     consulta.grid(column=1, row=7)
