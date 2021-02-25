@@ -32,7 +32,7 @@ def guardar():
     vSanatorio = sanatorio.get()
     #vfechaAct = fechaAct().get()
     #Guardado de la lista
-    lista.append(
+    lista.extend(
         vInterno+","+
         vTipo+","+
         vPatchera+","+
@@ -41,6 +41,7 @@ def guardar():
         vSanatorio
         
     )
+    print(lista)
     #vfechaAct
     escribirContacto()
     messagebox.showinfo("Guardado"," Los datos han sido guardados")

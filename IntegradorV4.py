@@ -7,18 +7,19 @@ from tkinter.constants import CENTER, END
 
 def conectadb():
     try:
-        con = sqlite3.connect("database.db")
+        con = sqlite3.connect("database2.db")
         con.text_factory=str
         cursor = con.cursor()
+        cursor.execute("CREATE TABLE PALERMO(interno VARCHAR(20), tipo VARCHAR(20), equu VARCHAR(20), ubicapatch VARCHAR(20), ssdatos VARCHAR(20), usuario VARCHAR(20))")
     except sqlite3.OperationalError:
         pass
     finally:
-        return cursor
+        return con
 
-def creaddb():
+# def creaddb():
     try:
         cursor = conectadb()
-        cursor.execute("CREATE TABLE PALERMO(interno INTEGER(20), tipo VARCHAR(20), equu VARCHAR(20), ubicapatch VARCHAR(20), ssdatos VARCHAR(20), usuario VARCHAR(20))")
+        cursor.execute("CREATE TABLE PALERMO(interno VARCHAR(20), tipo VARCHAR(20), equu VARCHAR(20), ubicapatch VARCHAR(20), ssdatos VARCHAR(20), usuario VARCHAR(20))")
     except sqlite3.OperationalError:
         pass    
 
@@ -28,11 +29,12 @@ def altadb():
     alta = cursor.execute(sql,guardar())
     cursor.commit()
     cursor.close()
-    return alta
     
 def consultadb():
+
     try:
-        cursor = conectadb()
+        con = conectadb()
+        cursor = con.cursor()
         cursor.execute("SELECT * FROM PALERMO where interno=?")
         cursor.fetchall()
         cursor.close()
@@ -54,39 +56,20 @@ def modificadb():
     cursor.commit()
     cursor.close()
  
-    
-#Ventana Principal
-ventana = Tk()
-ventana.geometry("800x189")
-ventana.title("Integrador V4")
-ventana.focus_set()
-ventana.grab_set()
-#******************************
 
-datos = []
-interno = IntVar()
-tipo = StringVar()
-patchera = StringVar()
-equu = StringVar()
-usuario = StringVar()
-ssdatos = StringVar()
 
 def guardar():
+    
     vinterno = interno.get()
     vtipo = tipo.get()
     vequu = equu.get()
     vpatchera = patchera.get()
     vssdatos = ssdatos.get()
     vusuario = usuario.get()
-
-    datos.append(str(vinterno)+" "+
-                vtipo+" "+
-                vequu+" "+
-                vpatchera+" "+
-                vssdatos+" "+
-                vusuario)
+    datos = [vinterno,vtipo,vequu,vpatchera,vssdatos,vusuario]
+    var = print(datos)
     messagebox.showinfo("Guardado"," Los datos han sido guardados")
-    interno.set('')
+    interno.set("")
     tipo.set('')
     patchera.set('')
     equu.set('')
@@ -95,24 +78,11 @@ def guardar():
     return datos
 
 
-#Pannel de pestañas
-pestaña = ttk.Notebook(ventana)
-p1 = ttk.Frame(pestaña)   
-p2 = ttk.Frame(pestaña)   
-p3 = ttk.Frame(pestaña)
-p4 = ttk.Frame(pestaña)
-pestaña.add(p1, text='Consulta')
-pestaña.add(p2, text='Modificar')
-pestaña.add(p3, text='Eliminar')
-pestaña.add(p4, text='Consutlar todo')
-pestaña.grid(column=1, row=1)
-
-#Penstaña Consulta
 
 def pestaña_consulta():
     sInterno = Label(p1, text="Interno")
     sInterno.grid(column=0, row=0, padx=0, pady=0)
-    sInternoEntry = Entry(p1, textvariable=interno.get())
+    sInternoEntry = Entry(p1, textvariable=interno)
     sInternoEntry.grid(column=1 , row=0)
 
     sTipo = Label(p1, text="Tipo")
@@ -169,7 +139,12 @@ def pestaña_abm():
     varSdDatosEntry = Entry(p2, textvariable=ssdatos)
     varSdDatosEntry.grid(column=1 , row=4)
 
-    agregar = Button(p2, text="Agregar", command=altadb())
+    vusuario = Label(p2, text="Usuario")
+    vusuario.grid(column=0, row=5, padx=0, pady=0)
+    vusuarioEntry = Entry(p2, textvariable=usuario)
+    vusuarioEntry.grid(column=1 , row=5)
+
+    agregar = Button(p2, text="Agregar", command=altadb)
     agregar.grid(column=0, row=7)
     agregar.invoke()
     modificar = Button(p2, text="Modificar")
@@ -188,12 +163,41 @@ def eliminar_interno():
 def consultar_todos():
     pass
 
-conectadb()
-consultar_todos()
-pestaña_abm()
-pestaña_consulta()
-eliminar_interno()
+
+#Ventana Principal
+ventana = Tk()
+ventana.geometry("800x210")
+ventana.title("Integrador V4")
+ventana.focus_set()
+ventana.grab_set()
+
+#******************************
+
+interno = StringVar()
+tipo = StringVar()
+patchera = StringVar()
+equu = StringVar()
+usuario = StringVar()
+ssdatos = StringVar()
+
+
+#Pannel de pestañas
+pestaña = ttk.Notebook(ventana)
+p1 = ttk.Frame(pestaña)   
+p2 = ttk.Frame(pestaña)   
+p3 = ttk.Frame(pestaña)
+p4 = ttk.Frame(pestaña)
+pestaña.add(p1, text='Consulta')
+pestaña.add(p2, text='Modificar')
+pestaña.add(p3, text='Eliminar')
+pestaña.add(p4, text='Consutlar todo')
+pestaña.grid(column=1, row=1)
+
+
+
 ventana.mainloop()
+
+
 
 
 
