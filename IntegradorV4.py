@@ -190,11 +190,13 @@ p4 = ttk.Frame(pestaña)
 pestaña.add(p1, text='Consulta')
 pestaña.add(p2, text='Modificar')
 pestaña.add(p3, text='Eliminar')
-pestaña.add(p4, text='Consutlar todo')
+pestaña.add(p4, text='Consultar todo')
 pestaña.grid(column=1, row=1)
 
-
-
+pestaña_consulta()
+pestaña_abm()
+consultar_todos()
+eliminar_interno()
 ventana.mainloop()
 
 
