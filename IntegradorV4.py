@@ -1,3 +1,4 @@
+from sqlite3.dbapi2 import Cursor
 import tkinter as tk
 from tkinter import Button, Entry, IntVar, Label, StringVar, ttk, scrolledtext 
 from tkinter import LabelFrame, Tk, messagebox
@@ -7,56 +8,59 @@ from tkinter.constants import CENTER, END
 
 def conectadb():
     try:
-        con = sqlite3.connect("database2.db")
-        con.text_factory=str
+        con = sqlite3.connect("database.db")
         cursor = con.cursor()
-        cursor.execute("CREATE TABLE PALERMO(interno VARCHAR(20), tipo VARCHAR(20), equu VARCHAR(20), ubicapatch VARCHAR(20), ssdatos VARCHAR(20), usuario VARCHAR(20))")
+        sql = "CREATE TABLE PALERMO(interno VARCHAR(20) UNIQUE NOT NULL, tipo VARCHAR(20), equu VARCHAR(20), ubicapatch VARCHAR(20), ssdatos VARCHAR(20), usuario VARCHAR(20))"
+        cursor.execute(sql)
     except sqlite3.OperationalError:
         pass
     finally:
         return con
 
-# def creaddb():
+def altadb():
+
     try:
         cursor = conectadb()
-        cursor.execute("CREATE TABLE PALERMO(interno VARCHAR(20), tipo VARCHAR(20), equu VARCHAR(20), ubicapatch VARCHAR(20), ssdatos VARCHAR(20), usuario VARCHAR(20))")
-    except sqlite3.OperationalError:
-        pass    
+        sql = "insert into PALERMO (interno, tipo, equu, ubicapatch, ssdatos, usuario) values (?,?,?,?,?,?)"
+        cursor.execute(sql,guardar())
+        cursor.commit()
+        cursor.close()
+    except sqlite3.IntegrityError:
+        messagebox.showerror("ERROR!","El interno: " + str(interno.get()) + " ya existe")
 
-def altadb():
-    cursor = conectadb()
-    sql = "insert into PALERMO (interno, tipo, equu, ubicapatch, ssdatos, usuario) values (?,?,?,?,?,?)"
-    alta = cursor.execute(sql,guardar())
-    cursor.commit()
-    cursor.close()
-    
 def consultadb():
 
     try:
         con = conectadb()
         cursor = con.cursor()
-        cursor.execute("SELECT * FROM PALERMO where interno=?")
+        cursor.execute("SELECT * FROM PALERMO where interno=" + str(interno.get()))
         cursor.fetchall()
         cursor.close()
     finally:
         return cursor.fetchall()
     
 def bajadb():
-    try: 
+    cursor = conectadb()
+   
+    try:
         cursor = conectadb()
-        cursor.execute("DELETE tipo, equu, ubicapatch, ssdatos, usuario FROM PALERMO where interno=?")
+        
+        sql = "delete from PALERMO where interno=" + str(interno.get()) 
+        cursor.execute(sql)
         cursor.commit()
+        print(cursor.rowcount)
+        return cursor.rowcount
+    except:
         cursor.close()
     finally:
-        return cursor.fetchall()
+        messagebox.showinfo("ELIMINANDO"," Los datos han sido eliminados " + str(interno.get()))
     
 def modificadb():
     cursor = conectadb()
-    cursor.execute("UPDATE PALERMO SET tipo, equu, ubicapatch, ssdatos, usuario VALUES(?,?,?,?)")    
+    sql = ("UPDATE PALERMO SET tipo, equu, ubicapatch, ssdatos, usuario VALUES(?,?,?,?) where interno=?")
+    cursor.execute(sql,guardar())
     cursor.commit()
     cursor.close()
- 
-
 
 def guardar():
     
@@ -69,15 +73,8 @@ def guardar():
     datos = [vinterno,vtipo,vequu,vpatchera,vssdatos,vusuario]
     var = print(datos)
     messagebox.showinfo("Guardado"," Los datos han sido guardados")
-    interno.set("")
-    tipo.set('')
-    patchera.set('')
-    equu.set('')
-    ssdatos.set('')
-    usuario.set('')
+    
     return datos
-
-
 
 def pestaña_consulta():
     sInterno = Label(p1, text="Interno")
@@ -113,7 +110,7 @@ def pestaña_consulta():
     consulta = Button(p1, text="Consulta", command=consultadb())
     consulta.grid(column=1, row=7)
 
-def pestaña_abm():
+def pestaña_agrega_modifica():
     sInterno = Label(p2, text="Interno")
     sInterno.grid(column=0, row=0, padx=0, pady=0)
     sInternoEntry = Entry(p2, textvariable=interno)
@@ -146,30 +143,30 @@ def pestaña_abm():
 
     agregar = Button(p2, text="Agregar", command=altadb)
     agregar.grid(column=0, row=7)
-    agregar.invoke()
-    modificar = Button(p2, text="Modificar")
-    modificar.grid(column=1, row=7)
-    modificar.invoke()
 
-def eliminar_interno():
+    modificar = Button(p2, text="Modificar", command=consultadb)
+    modificar.grid(column=1, row=7)
+    
+
+def pestaña_eliminar():
     sInterno = Label(p3, text="Interno")
     sInterno.grid(column=0, row=0, padx=0, pady=0)
     sInternoEntry = Entry(p3, textvariable=interno)
     sInternoEntry.grid(column=1 , row=0)
 
-    eliminar = Button(p3, text="Eliminar")
+    eliminar = Button(p3, text="Eliminar", command=bajadb)
     eliminar.grid(column=0, row=0)
 
-def consultar_todos():
+def pestaña_consultar_todos():
     pass
+
+
 
 
 #Ventana Principal
 ventana = Tk()
 ventana.geometry("800x210")
 ventana.title("Integrador V4")
-ventana.focus_set()
-ventana.grab_set()
 
 #******************************
 
@@ -193,10 +190,13 @@ pestaña.add(p3, text='Eliminar')
 pestaña.add(p4, text='Consultar todo')
 pestaña.grid(column=1, row=1)
 
+#Panel de funciones
+pestaña_agrega_modifica()
 pestaña_consulta()
-pestaña_abm()
-consultar_todos()
-eliminar_interno()
+pestaña_eliminar()
+pestaña_consultar_todos()
+conectadb()
+
 ventana.mainloop()
 
 
