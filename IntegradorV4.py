@@ -147,7 +147,6 @@ def pestaña_agrega_modifica():
     modificar = Button(p2, text="Modificar", command=consultadb)
     modificar.grid(column=1, row=7)
     
-
 def pestaña_eliminar():
     sInterno = Label(p3, text="Interno")
     sInterno.grid(column=0, row=0, padx=0, pady=0)
