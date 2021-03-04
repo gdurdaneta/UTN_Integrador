@@ -194,7 +194,10 @@ pestaña.add(p4, text='Consutlar todo')
 pestaña.grid(column=1, row=1)
 
 
-
+pestaña_abm()
+pestaña_consulta()
+eliminar_interno()
+consultar_todos()
 ventana.mainloop()
 
 
