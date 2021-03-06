@@ -3,9 +3,13 @@ import tkinter as tk
 from tkinter import Button, Entry, IntVar, Label, StringVar, ttk, scrolledtext 
 from tkinter import LabelFrame, Tk, messagebox
 import sqlite3
-from tkinter.constants import CENTER, END
+from tkinter.constants import ANCHOR, CENTER, END, W
+from typing import Text
 
+ID = 0
 
+#Funciones de base de datos
+#------------------------------------------------------------------------------------------------------------------------------------------
 def conectadb():
     try:
         con = sqlite3.connect("database.db")
@@ -18,10 +22,10 @@ def conectadb():
         return con
 
 def altadb():
-
+    
     try:
         cursor = conectadb()
-        sql = "insert into PALERMO (interno, tipo, equu, ubicapatch, ssdatos, usuario) values (?,?,?,?,?,?)"
+        sql = "INSERT INTO PALERMO (interno, tipo, equu, ubicapatch, ssdatos, usuario) values (?,?,?,?,?,?)"
         cursor.execute(sql,guardar())
         cursor.commit()
         cursor.close()
@@ -36,8 +40,8 @@ def consultadb():
         cursor.execute("SELECT * FROM PALERMO where interno=" + str(interno.get()))
         cursor.fetchall()
         cursor.close()
-    finally:
-        return cursor.fetchall()
+    except sqlite3.OperationalError:
+        pass
     
 def bajadb():
     cursor = conectadb()
@@ -56,11 +60,20 @@ def bajadb():
         messagebox.showinfo("ELIMINANDO"," Los datos han sido eliminados " + str(interno.get()))
     
 def modificadb():
-    cursor = conectadb()
-    sql = ("UPDATE PALERMO SET tipo, equu, ubicapatch, ssdatos, usuario VALUES(?,?,?,?) where interno=?")
-    cursor.execute(sql,guardar())
-    cursor.commit()
-    cursor.close()
+    try:
+        cursor = conectadb()
+        sql = ("UPDATE PALERMO SET tipo, equu, ubicapatch, ssdatos, usuario VALUES(?,?,?,?) WHERE interno=") + str(interno.get())
+        cursor.execute(sql,guardar())
+        cursor.commit()
+        cursor.close()
+    except sqlite3.OperationalError:
+        print(sqlite3.OperationalError)
+
+#Fin Funciones de base de datos
+#------------------------------------------------------------------------------------------------------------------------------------------
+
+#funciones de Ejecucion
+#------------------------------------------------------------------------------------------------------------------------------------------
 
 def guardar():
     
@@ -71,10 +84,17 @@ def guardar():
     vssdatos = ssdatos.get()
     vusuario = usuario.get()
     datos = [vinterno,vtipo,vequu,vpatchera,vssdatos,vusuario]
+    
     var = print(datos)
     messagebox.showinfo("Guardado"," Los datos han sido guardados")
     
     return datos
+
+#Fin de funciones de Ejecucion
+#------------------------------------------------------------------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------------------------------------------------------------------
+#Funciones de ventanas
 
 def pestaña_consulta():
     sInterno = Label(p1, text="Interno")
@@ -110,7 +130,7 @@ def pestaña_consulta():
     consulta = Button(p1, text="Consulta", command=consultadb())
     consulta.grid(column=1, row=7)
 
-def pestaña_agrega_modifica():
+def pestaña_agrega():
     sInterno = Label(p2, text="Interno")
     sInterno.grid(column=0, row=0, padx=0, pady=0)
     sInternoEntry = Entry(p2, textvariable=interno)
@@ -143,24 +163,64 @@ def pestaña_agrega_modifica():
 
     agregar = Button(p2, text="Agregar", command=altadb)
     agregar.grid(column=0, row=7)
-
-    modificar = Button(p2, text="Modificar", command=consultadb)
-    modificar.grid(column=1, row=7)
-    
-def pestaña_eliminar():
+  
+def pestaña_modifica():
     sInterno = Label(p3, text="Interno")
     sInterno.grid(column=0, row=0, padx=0, pady=0)
     sInternoEntry = Entry(p3, textvariable=interno)
     sInternoEntry.grid(column=1 , row=0)
 
-    eliminar = Button(p3, text="Eliminar", command=bajadb)
+    sTipo = Label(p3, text="Tipo")
+    sTipo.grid(column=0, row=1, padx=0, pady=0)
+    sTipoEntry = Entry(p3, textvariable=tipo)
+    sTipoEntry.grid(column=1 , row=1)
+
+    sEquu = Label(p3, text="Equu")
+    sEquu.grid(column=0, row=2, padx=0, pady=0)
+    sEquuEntry = Entry(p3, textvariable=equu)
+    sEquuEntry.grid(column=1 , row=2)
+
+    sPatchera = Label(p3, text="Patchera")
+    sPatchera.grid(column=0, row=3, padx=0, pady=0)
+    sPatcheraEntry = Entry(p3, textvariable=patchera)
+    sPatcheraEntry.grid(column=1 , row=3)
+
+    varSdDatos = Label(p3, text="Sala de datos")
+    varSdDatos.grid(column=0, row=4, padx=0, pady=0)
+    varSdDatosEntry = Entry(p3, textvariable=ssdatos)
+    varSdDatosEntry.grid(column=1 , row=4)
+
+    vusuario = Label(p3, text="Usuario")
+    vusuario.grid(column=0, row=5, padx=0, pady=0)
+    vusuarioEntry = Entry(p3, textvariable=usuario)
+    vusuarioEntry.grid(column=1 , row=5)
+
+    consultar = Button(p3, text="Consulta", command=consultadb)
+    consultar.grid(column=0, row=7)
+
+    modificar = Button(p3, text="Modificar", command=modificadb)
+    modificar.grid(column=1, row=7)
+
+def pestaña_eliminar():
+    sInterno = Label(p4, text="Interno")
+    sInterno.grid(column=0, row=0, padx=0, pady=0)
+    sInternoEntry = Entry(p4, textvariable=interno)
+    sInternoEntry.grid(column=1 , row=0)
+
+    eliminar = Button(p4, text="Eliminar", command=bajadb)
     eliminar.grid(column=0, row=0)
 
 def pestaña_consultar_todos():
-    pass
+    tree = ttk.Treeview(p6)
+    tree["columns"] = ("col1", "col2", "col3")
+    tree.column("#0", width=50, minwidth=50)
+    tree.column("col1", width=80, minwidth=80)
+    tree.column("col2", width=80, minwidth=80)
+    tree.column("col3", width=100, minwidth=100)
+    return tree
 
-
-
+#Funciones de ventanas
+#------------------------------------------------------------------------------------------------------------------------------------------
 
 #Ventana Principal
 ventana = Tk()
@@ -179,18 +239,26 @@ ssdatos = StringVar()
 
 #Pannel de pestañas
 pestaña = ttk.Notebook(ventana)
+pestaña.grid(column=0, row=1)
+pestaña2 = ttk.Notebook(ventana)
+pestaña2.grid(column=0, row=9)
 p1 = ttk.Frame(pestaña)   
 p2 = ttk.Frame(pestaña)   
 p3 = ttk.Frame(pestaña)
 p4 = ttk.Frame(pestaña)
+p5 = ttk.Frame(pestaña)
+p6 = ttk.Frame(pestaña2)
 pestaña.add(p1, text='Consulta')
-pestaña.add(p2, text='Modificar')
-pestaña.add(p3, text='Eliminar')
-pestaña.add(p4, text='Consultar todo')
-pestaña.grid(column=1, row=1)
+pestaña.add(p2, text='Agregar')
+pestaña.add(p3, text='Modificar')
+pestaña.add(p4, text='Eliminar')
+pestaña.add(p5, text='Consultar todo')
+pestaña2.add(p6, text='Treeview')
+
 
 #Panel de funciones
-pestaña_agrega_modifica()
+pestaña_agrega()
+pestaña_modifica()
 pestaña_consulta()
 pestaña_eliminar()
 pestaña_consultar_todos()
