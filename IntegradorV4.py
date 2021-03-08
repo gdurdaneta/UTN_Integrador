@@ -4,9 +4,8 @@ from tkinter import Button, Entry, IntVar, Label, StringVar, ttk, scrolledtext
 from tkinter import LabelFrame, Tk, messagebox
 import sqlite3
 from tkinter.constants import ANCHOR, CENTER, END, W
-from typing import Text
+from typing import Text, TextIO
 
-ID = 0
 
 #Funciones de base de datos
 #------------------------------------------------------------------------------------------------------------------------------------------
@@ -33,15 +32,21 @@ def altadb():
         messagebox.showerror("ERROR!","El interno: " + str(interno.get()) + " ya existe")
 
 def consultadb():
-
     try:
+        consulta = []
         con = conectadb()
+        dato = [str(interno.get())]
         cursor = con.cursor()
-        cursor.execute("SELECT * FROM PALERMO where interno=" + str(interno.get()))
-        cursor.fetchall()
+        sql = "SELECT * FROM PALERMO WHERE interno=?" 
+        cursor.execute(sql,dato)
+        tabla = cursor.fetchone()
+        for datos in tabla:
+            consulta.append(datos)
+        print(consulta)
         cursor.close()
     except sqlite3.OperationalError:
-        pass
+        print(sqlite3.OperationalError)
+    return consulta
     
 def bajadb():
     cursor = conectadb()
@@ -62,12 +67,12 @@ def bajadb():
 def modificadb():
     try:
         cursor = conectadb()
-        sql = ("UPDATE PALERMO SET tipo, equu, ubicapatch, ssdatos, usuario VALUES(?,?,?,?) WHERE interno=") + str(interno.get())
+        sql = ("UPDATE PALERMO SET tipo, equu, ubicapatch, ssdatos, usuario VALUES (NULL,?,?,?,?) WHERE interno=") + str(interno.get())
         cursor.execute(sql,guardar())
         cursor.commit()
         cursor.close()
     except sqlite3.OperationalError:
-        print(sqlite3.OperationalError)
+        pass
 
 #Fin Funciones de base de datos
 #------------------------------------------------------------------------------------------------------------------------------------------
@@ -104,7 +109,7 @@ def pestaña_consulta():
 
     sTipo = Label(p1, text="Tipo")
     sTipo.grid(column=0, row=1, padx=0, pady=0)
-    sTipoEntry = Entry(p1, textvariable=tipo.get(), state="readonly")
+    sTipoEntry = Entry(p1, textvariable=tipo.get(consultadb[0]), state="readonly")
     sTipoEntry.grid(column=1 , row=1)
 
     sEquu = Label(p1, text="Equu")
@@ -127,7 +132,7 @@ def pestaña_consulta():
     susuarioEntry = Entry(p1, textvariable=usuario.get(), state="readonly")
     susuarioEntry.grid(column=1 , row=5)
 
-    consulta = Button(p1, text="Consulta", command=consultadb())
+    consulta = Button(p1, text="Consulta", command=consultadb)
     consulta.grid(column=1, row=7)
 
 def pestaña_agrega():
@@ -226,7 +231,7 @@ def pestaña_consultar_todos():
 ventana = Tk()
 ventana.geometry("800x210")
 ventana.title("Integrador V4")
-
+ventana.resizable(width=False, height=False)
 #******************************
 
 interno = StringVar()
