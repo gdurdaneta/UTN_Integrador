@@ -109,7 +109,7 @@ def pestaña_consulta():
 
     sTipo = Label(p1, text="Tipo")
     sTipo.grid(column=0, row=1, padx=0, pady=0)
-    sTipoEntry = Entry(p1, textvariable=tipo.get(consultadb[0]), state="readonly")
+    sTipoEntry = Entry(p1, textvariable="prueba", state="readonly")
     sTipoEntry.grid(column=1 , row=1)
 
     sEquu = Label(p1, text="Equu")
@@ -270,11 +270,3 @@ pestaña_consultar_todos()
 conectadb()
 
 ventana.mainloop()
-
-
-
-
-
-
-
-
