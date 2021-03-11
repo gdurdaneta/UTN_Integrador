@@ -270,3 +270,4 @@ pestaña_consultar_todos()
 conectadb()
 
 ventana.mainloop()
+
