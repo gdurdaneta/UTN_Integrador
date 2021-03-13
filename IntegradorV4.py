@@ -33,21 +33,26 @@ def altadb():
 
 def consultadb():
     try:
-        consulta2 = []
         con = conectadb()
-        dato = [str(interno.get())]
         cursor = con.cursor()
+        consulta = []
+        
+        dato = [str(interno.get())]
         sql = "SELECT * FROM PALERMO WHERE interno=?" 
         cursor.execute(sql,dato)
-        tabla = cursor.fetchone()
-        for datos in tabla:
-            consulta2.append(datos)
-        print(consulta2)
+        tabla = cursor.fetchmany()
+        
+        if len(tabla) > 0:
+            for i in tabla:
+                for n in i:
+                    consulta.append(n)
+        else:
+            consulta = ['','','','','']
         cursor.close()
     except sqlite3.OperationalError:
         print(sqlite3.OperationalError)
-    return consulta2
-
+    return consulta
+    
 def bajadb():
     cursor = conectadb()
    
@@ -65,14 +70,16 @@ def bajadb():
         messagebox.showinfo("ELIMINANDO"," Los datos han sido eliminados " + str(interno.get()))
     
 def modificadb():
-    try:
-        cursor = conectadb()
-        sql = ("UPDATE PALERMO SET tipo, equu, ubicapatch, ssdatos, usuario VALUES (NULL,?,?,?,?) WHERE interno=") + str(interno.get())
-        cursor.execute(sql,guardar())
-        cursor.commit()
-        cursor.close()
-    except sqlite3.OperationalError:
-        pass
+   
+    cursor = conectadb()
+    datos = str(tipo.get()), str(equu.get()), str(patchera.get()), str(ssdatos.get()), str(usuario.get()), str(interno.get())
+    print(tipo)
+    sql = ("UPDATE PALERMO SET tipo=?, equu=?, ubicapatch=?, ssdatos=?, usuario=? WHERE interno=?") 
+    cursor.execute(sql, datos)
+    messagebox.showinfo("STATUS", "DATOS ACTUALIZADOS")
+    cursor.commit()
+    cursor.close()
+    
 
 #Fin Funciones de base de datos
 #------------------------------------------------------------------------------------------------------------------------------------------
@@ -90,8 +97,6 @@ def guardar():
     vssdatos = ssdatos.get()
     vusuario = usuario.get()
     datos = [vinterno,vtipo,vequu,vpatchera,vssdatos,vusuario]
-    
-    var = print(datos)
     messagebox.showinfo("Guardado"," Los datos han sido guardados")
     
     return datos
@@ -107,7 +112,13 @@ def validacion():
 
 def pestaña_consulta():
     consultadb()
-
+    print(consultadb())
+    lista = consultadb()
+    tipo.set(lista[1])
+    equu.set(lista[2]) 
+    patchera.set(lista[3])
+    ssdatos.set(lista[4])
+    usuario.set("")
 
     sInterno = Label(p1, text="Interno")
     sInterno.grid(column=0, row=0, padx=0, pady=0)
@@ -139,8 +150,8 @@ def pestaña_consulta():
     susuarioEntry = Entry(p1, textvariable=StringVar(p1,value=str(usuario.get())), state="readonly")
     susuarioEntry.grid(column=1 , row=5)
 
-    consulta = Button(p1, text="Consulta", command=pestaña_consulta)
-    consulta.grid(column=1, row=7)
+    consultabutton = Button(p1, text="Consulta", command=pestaña_consulta)
+    consultabutton.grid(column=1, row=7)
 
 def pestaña_agrega():
     sInterno = Label(p2, text="Interno")
@@ -208,10 +219,10 @@ def pestaña_modifica():
     vusuarioEntry = Entry(p3, textvariable=usuario)
     vusuarioEntry.grid(column=1 , row=5)
 
-    consultar = Button(p3, text="Consulta", command=pestaña_consulta)
-    consultar.grid(column=0, row=7)
+    consultarbutton = Button(p3, text="Consulta", command=pestaña_consulta)
+    consultarbutton.grid(column=0, row=7)
 
-    modificar = Button(p3, text="Modificar", command=modificadb())
+    modificar = Button(p3, text="Modificar", command=modificadb)
     modificar.grid(column=1, row=7)
 
 def pestaña_eliminar():
