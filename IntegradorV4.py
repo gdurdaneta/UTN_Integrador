@@ -3,8 +3,9 @@ import tkinter as tk
 from tkinter import Button, Entry, IntVar, Label, StringVar, ttk, scrolledtext 
 from tkinter import LabelFrame, Tk, messagebox
 import sqlite3
-from tkinter.constants import ANCHOR, CENTER, END, W
+from tkinter.constants import ANCHOR, CENTER, END, N, W
 from typing import Text, TextIO
+import re
 
 
 #Funciones de base de datos
@@ -234,17 +235,43 @@ def pestaña_eliminar():
     eliminar.grid(column=0, row=0)
 
 def pestaña_contraseña():
-    sPassword = Label(p2, text="Contraseña")
+    
+
+    sPassword = Label(p5, text="Contraseña")
     sPassword.grid(column=0, row=0, padx=0, pady=0)
-    sPasswordEntry = Entry(p2, textvariable=password)
+    sPasswordEntry = Entry(p5, textvariable=password)
     sPasswordEntry.grid(column=1 , row=0)
+    
+    valida = re.compile(r'''(
+        ^(?=.*[A-Z])
+         (?=.*[a-z])
+         (?=.*[0-9])
+         (?=.*[!@#$%&])
+         .{8,}
+         $
+    )''', re.VERBOSE)
+    print(password.get())
+    print(str(password.get()))
+    validado = valida.search(str(password.get()))
+    print(validado)
+    if not  validado:
+        validadoEntry = Label(p5, text="Contraseña No es segura")
+        validadoEntry.grid(column=1, row=3)
+    else:
+        validadoEntry = Label(p5, text="Contraseña segura")
+        validadoEntry.grid(column=1, row=3)
+
+
+    validaButton = Button(p5, text="Valida", command=pestaña_contraseña)
+    validaButton.grid(column=0, row=4)
+    
 
 #Funciones de ventanas
 #------------------------------------------------------------------------------------------------------------------------------------------
 
 #Ventana Principal
 ventana = Tk()
-ventana.geometry("800x210")
+ventana.geometry("360x210")
 ventana.title("Integrador V4")
 ventana.resizable(width=False, height=False)
 #******************************
@@ -267,13 +294,13 @@ p2 = ttk.Frame(pestaña)
 p3 = ttk.Frame(pestaña)
 p4 = ttk.Frame(pestaña)
 p5 = ttk.Frame(pestaña)
-p6 = ttk.Frame(pestaña2)
+
 pestaña.add(p1, text='Consulta')
 pestaña.add(p2, text='Agregar')
 pestaña.add(p3, text='Modificar')
 pestaña.add(p4, text='Eliminar')
 pestaña.add(p5, text='Contraseña')
-pestaña2.add(p6, text='Treeview')
+
 
 
 #Panel de funciones

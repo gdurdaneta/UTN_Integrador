@@ -1,121 +1,60 @@
+
 from tkinter import *
-from datetime import date
-from datetime import datetime
-import mysql.connector
 
+screen = Tk()
+screen.geometry("500x500")
+screen.title("Python form validation")
 
-agenda = Tk()
-vari = StringVar()
-hoy = date.today()
+def delete():
+    screen1.destroy()
 
-#Titulos de Tkinter.
+def delete1():
+    screen2.destroy()
 
-Label(agenda, text= hoy.strftime('%d/%m/%Y')).grid(row=0, column=1, sticky=N)
-Label(agenda, text="Hoy es:").grid(row=0, column=0, sticky=N)
-Label(agenda, text="Año:").grid(row=1, column=0, sticky=N)
-Label(agenda, text="Mes:").grid(row=2, column=0, sticky=N)
-Label(agenda, text="Día:").grid(row=3, column=0, sticky=N)
-Label(agenda, text="Ingrese el recordatorio:").grid(row=4, column=0, sticky=N)
-Label(agenda, text="Evento hoy:").grid(row=5, column=0, sticky=N)
+def error():
+    global screen1
+    screen1 = Toplevel(screen)
+    screen1.geometry("150x90")
+    screen1.title("Warning!")
+    Label(screen1, text = "All fields required", fg = "red").pack()
+    Button(screen1, text = "OK", command = delete).pack()
 
-#Caracteristica de campos.
-
-e1 = Entry(agenda)
-e2 = Entry(agenda)
-e3 = Entry(agenda)
-e4 = Entry(agenda)
-e5 = Label(agenda, textvariable = vari, padx =50, pady= 5)
-
-#Posicion de campos
-
-e1.grid(row=1, column=1)
-e2.grid(row=2, column=1)
-e3.grid(row=3, column=1)
-e4.grid(row=4, column=1)
-e5.grid(row=5, column=1)
-
-#Crea BD
-
-def crearbd():
-    mibase = mysql.connector.connect(   
-        host="localhost",  
-        user="gerardo",  
-        passwd="6003823")
-    micursor = mibase.cursor()
-    micursor.execute("CREATE DATABASE Agenda")
-
-#Crea la tabla
-
-def crearagenda():
-    mibase = mysql.connector.connect(   
-        host="localhost",  
-        user="root",  
-        passwd="",
-        database="Agenda")
-    micursor = mibase.cursor()
-    micursor.execute("CREATE TABLE Agenda(Fecha date NOT NULL,Recordatorio text NOT NULL)")
-
-#Agrega recordatorios.
-
-def alta():
-    mibase = mysql.connector.connect(
-        host = "localhost",
-        user = "root",
-        passwd = "",
-        database = "Agenda"
-    )        
-    micursor = mibase.cursor()
-    sql = "INSERT INTO Agenda (Fecha,Recordatorio) VALUES (%s,%s)"
-    datos = (date(int(e1.get()),int(e2.get()),int(e3.get())),e4.get())
-    micursor.execute(sql, datos)
-    mibase.commit()
-
-#Borra recordatorio en la fecha ingresada.
-
-def borrar():
-    mibase = mysql.connector.connect(
-        host="localhost",  
-        user="root",  
-        passwd="",  
-        database="Agenda"
-    )
-    micursor = mibase.cursor()
-    sql = "DELETE FROM Agenda WHERE Fecha = %s"
-    dato = (date(int(e1.get()),int(e2.get()),int(e3.get())),)
-    micursor.execute(sql, dato)
-    mibase.commit()
-
-#Busqueda de recordatorio en el dia de la fecha.
-
-def proximorecordatorio():
-    mibase = mysql.connector.connect(
-        host="localhost",  
-        user="root",  
-        passwd="",  
-        database="Agenda"
-    )
-    micursor = mibase.cursor()
-    sql = "SELECT Recordatorio FROM Agenda WHERE Fecha = %s"
-    dato = (date.today(),)
-    micursor.execute(sql,dato)
-    resultado = micursor.fetchall()
-    vari.set("")
-    vari.set(resultado)
+def success():
+    global screen2
+    screen2 = Toplevel(screen)
+    screen2.geometry("150x90")
+    screen2.title("Warning!")
+    Label(screen2, text = "Registration Sucess!", fg = "green").pack()
+    Button(screen2, text = "OK", command = delete1).pack()
     
-b = Button(agenda, text="Ingresar", command=alta, padx=5, pady=5)
-b.grid(row=6, column=0)
+def register():
+  
+  username_text = username.get()
+  password_text = password.get()
 
-c = Button(agenda, text="Proximo recodatorio", command=proximorecordatorio, padx=5, pady=5)
-c.grid(row=6, column=3)
+  if username_text == "":
+              error()
 
-d = Button(agenda, text="Crear BD", command=crearbd, padx=5, pady=5)
-d.grid(row=0, column=3)
+  elif password_text == "":
+              error()
 
-e = Button(agenda, text="Borrar recordatorio", command=borrar, padx=5, pady=5)
-e.grid(row=6, column=1)
+  else:
+    success()
+    
+  
+  
 
-f = Button(agenda, text="Crear Tabla", command=crearagenda, padx=5, pady=5)
-f.grid(row=1, column=3)
+heading = Label(text = "Python Form Validation", fg = "black", bg = "grey", width = "500", height = "3").pack()
 
+Label(text = "Username * ").place(x = 15, y = 70)
+Label(text = "Password * ").place(x = 15, y = 140)
+
+username = StringVar()
+password = StringVar()
+
+Entry(screen, textvariable = username).place(x = 15, y = 100)
+Entry(screen, textvariable = password).place(x = 15, y = 170)
+
+Button(screen, text = "Register", width = "7", bg = "grey", command = register).place(x = 15, y = 210)
 
 mainloop()
