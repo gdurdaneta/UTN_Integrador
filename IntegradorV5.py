@@ -102,6 +102,9 @@ def guardar():
 #Funciones de ventanas
 
 def pestaña_consulta():
+    lista = consultadb()
+    tipo = lista[1]
+
     sInterno = Label(p1, text="Interno")
     sInterno.grid(column=0, row=0, padx=0, pady=0)
     sInternoEntry = Entry(p1, textvariable=interno)
@@ -109,30 +112,30 @@ def pestaña_consulta():
 
     sTipo = Label(p1, text="Tipo")
     sTipo.grid(column=0, row=1, padx=0, pady=0)
-    sTipoEntry = Entry(p1, textvariable="prueba", state="readonly")
+    sTipoEntry = Entry(p1, textvariable=(StringVar(p1,value=str(tipo.get()))), state="readonly")
     sTipoEntry.grid(column=1 , row=1)
 
     sEquu = Label(p1, text="Equu")
     sEquu.grid(column=0, row=2, padx=0, pady=0)
-    sEquuEntry = Entry(p1, textvariable=equu.get(), state="readonly")
+    sEquuEntry = Entry(p1, textvariable=StringVar(p1,value=str(equu.get())), state="readonly")
     sEquuEntry.grid(column=1 , row=2)
 
     sPatchera = Label(p1, text="Patchera")
     sPatchera.grid(column=0, row=3, padx=0, pady=0)
-    sPatcheraEntry = Entry(p1, textvariable=patchera.get(), state="readonly")
+    sPatcheraEntry = Entry(p1, textvariable=StringVar(p1,value=str(patchera.get())), state="readonly")
     sPatcheraEntry.grid(column=1 , row=3)
 
     varSdDatos = Label(p1, text="Sala de datos")
     varSdDatos.grid(column=0, row=4, padx=0, pady=0)
-    varSdDatosEntry = Entry(p1, textvariable=ssdatos.get(), state="readonly")
+    varSdDatosEntry = Entry(p1, textvariable=StringVar(p1,value=str(ssdatos.get())), state="readonly")
     varSdDatosEntry.grid(column=1 , row=4)
     
     susuario = Label(p1, text="Usuario")
     susuario.grid(column=0, row=5, padx=0, pady=0)
-    susuarioEntry = Entry(p1, textvariable=usuario.get(), state="readonly")
+    susuarioEntry = Entry(p1, textvariable=StringVar(p1,value=str(usuario.get())), state="readonly")
     susuarioEntry.grid(column=1 , row=5)
 
-    consulta = Button(p1, text="Consulta", command=consultadb)
+    consulta = Button(p1, text="Consulta", command=pestaña_consulta)
     consulta.grid(column=1, row=7)
 
 def pestaña_agrega():
@@ -200,7 +203,7 @@ def pestaña_modifica():
     vusuarioEntry = Entry(p3, textvariable=usuario)
     vusuarioEntry.grid(column=1 , row=5)
 
-    consultar = Button(p3, text="Consulta", command=consultadb)
+    consultar = Button(p3, text="Consulta", command=pestaña_consulta())
     consultar.grid(column=0, row=7)
 
     modificar = Button(p3, text="Modificar", command=modificadb)

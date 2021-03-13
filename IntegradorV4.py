@@ -33,7 +33,7 @@ def altadb():
 
 def consultadb():
     try:
-        consulta = []
+        consulta2 = []
         con = conectadb()
         dato = [str(interno.get())]
         cursor = con.cursor()
@@ -41,11 +41,12 @@ def consultadb():
         cursor.execute(sql,dato)
         tabla = cursor.fetchone()
         for datos in tabla:
-            consulta.append(datos)
+            consulta2.append(datos)
+        print(consulta2)
         cursor.close()
     except sqlite3.OperationalError:
         print(sqlite3.OperationalError)
-    return consulta
+    return consulta2
 
 def bajadb():
     cursor = conectadb()
@@ -95,6 +96,9 @@ def guardar():
     
     return datos
 
+
+def validacion():
+    pass
 #Fin de funciones de Ejecucion
 #------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -102,9 +106,9 @@ def guardar():
 #Funciones de ventanas
 
 def pestaña_consulta():
+    consultadb()
 
 
-    print(tipo.get())
     sInterno = Label(p1, text="Interno")
     sInterno.grid(column=0, row=0, padx=0, pady=0)
     sInternoEntry = Entry(p1, textvariable=interno)
@@ -173,7 +177,6 @@ def pestaña_agrega():
     agregar.grid(column=0, row=7)
   
 def pestaña_modifica():
-    modificadb()
 
     sInterno = Label(p3, text="Interno")
     sInterno.grid(column=0, row=0, padx=0, pady=0)
@@ -208,7 +211,7 @@ def pestaña_modifica():
     consultar = Button(p3, text="Consulta", command=pestaña_consulta)
     consultar.grid(column=0, row=7)
 
-    modificar = Button(p3, text="Modificar", command=pestaña_modifica)
+    modificar = Button(p3, text="Modificar", command=modificadb())
     modificar.grid(column=1, row=7)
 
 def pestaña_eliminar():
@@ -219,14 +222,11 @@ def pestaña_eliminar():
     eliminar = Button(p4, text="Eliminar", command=bajadb)
     eliminar.grid(column=0, row=0)
 
-def pestaña_consultar_todos():
-    tree = ttk.Treeview(p6)
-    tree["columns"] = ("col1", "col2", "col3")
-    tree.column("#0", width=50, minwidth=50)
-    tree.column("col1", width=80, minwidth=80)
-    tree.column("col2", width=80, minwidth=80)
-    tree.column("col3", width=100, minwidth=100)
-    return tree
+def pestaña_contraseña():
+    sPassword = Label(p2, text="Contraseña")
+    sPassword.grid(column=0, row=0, padx=0, pady=0)
+    sPasswordEntry = Entry(p2, textvariable=password)
+    sPasswordEntry.grid(column=1 , row=0)
 
 #Funciones de ventanas
 #------------------------------------------------------------------------------------------------------------------------------------------
@@ -244,6 +244,7 @@ patchera = StringVar()
 equu = StringVar()
 usuario = StringVar()
 ssdatos = StringVar()
+password = StringVar()
 
 #Pannel de pestañas
 pestaña = ttk.Notebook(ventana)
@@ -260,7 +261,7 @@ pestaña.add(p1, text='Consulta')
 pestaña.add(p2, text='Agregar')
 pestaña.add(p3, text='Modificar')
 pestaña.add(p4, text='Eliminar')
-pestaña.add(p5, text='Consultar todo')
+pestaña.add(p5, text='Contraseña')
 pestaña2.add(p6, text='Treeview')
 
 
@@ -269,7 +270,7 @@ pestaña_agrega()
 pestaña_modifica()
 pestaña_consulta()
 pestaña_eliminar()
-pestaña_consultar_todos()
+pestaña_contraseña()
 conectadb()
 
 ventana.mainloop()
